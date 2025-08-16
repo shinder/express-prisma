@@ -13,3 +13,48 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id         Int      @id @default(autoincrement())
+  // 資料表欄位為 first_name
+  firstName  String   @map("first_name")
+  lastName   String   @map("last-name")
+  email      String   @unique
+  createdAt  DateTime @default(now()) @map("created_at")
+  updated_at DateTime @updatedAt
+  // 一個用戶可以有多則貼文，關聯到 `Post` 模型的陣列
+  posts      Post[]
+  // 一個人有很多嗜好
+  hobbies    Hobby[]
+  // 一個用戶 "可能有" 設定 "個人資料"
+  profile    Profile?
+
+  // 明確註釋為什麼要忽略
+  password      String @ignore // 安全考量：防止意外暴露
+  internalNotes String @ignore // 僅供管理員後台使用
+
+  // 對應的資料表為 users
+  @@map("users")
+}
+
+model Post {
+  id        Int    @id @default(autoincrement())
+  content   String @db.Text
+  author_id Int
+  // 一則貼文有所屬性用戶
+  author    User   @relation(fields: [author_id], references: [id])
+}
+
+model Hobby {
+  id    Int    @id @default(autoincrement())
+  name  String
+  // 有相同嗜好的有許多人
+  users User[]
+}
+
+model Profile {
+  id      Int  @id
+  // 個人資料可以對應到某個用戶
+  user    User @relation(fields: [user_id], references: [id])
+  user_id Int  @unique
+}
