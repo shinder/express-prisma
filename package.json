@@ -25,6 +25,7 @@
   "homepage": "https://github.com/shinder/express-mvc-prisma#readme",
   "description": "",
   "dependencies": {
+    "@prisma/client": "^6.14.0",
     "dotenv": "^17.2.1",
     "ejs": "^3.1.10",
     "express": "^4.21.2"
@@ -36,6 +37,7 @@
     "concurrently": "^9.2.0",
     "daisyui": "^5.0.50",
     "nodemon": "^3.1.10",
+    "prisma": "^6.14.0",
     "tailwindcss": "^4.1.12",
     "tsx": "^4.20.4",
     "typescript": "^5.9.2"
