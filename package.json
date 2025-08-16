@@ -2,8 +2,15 @@
   "name": "express-mvc-prisma",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "tw": "tailwindcss -i ./src/css/app.css -o ./public/css/app.css --watch",
+    "dev": "concurrently \"npm run tw\" \"npm run dev2\"",
+    "dev2": "nodemon --exec tsx src/index.ts",
+    "dev3": "bun run --watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "prod": "pm2 start --interpreter ~/.bun/bin/bun src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -23,9 +30,13 @@
     "express": "^4.21.2"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "^4.1.12",
     "@types/express": "^5.0.3",
     "@types/node": "^24.3.0",
+    "concurrently": "^9.2.0",
+    "daisyui": "^5.0.50",
     "nodemon": "^3.1.10",
+    "tailwindcss": "^4.1.12",
     "tsx": "^4.20.4",
     "typescript": "^5.9.2"
   }

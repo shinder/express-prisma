@@ -4,6 +4,10 @@
 .DS_Store
 Thumbs.db
 
+/pnpm-lock.yaml
+/public/css/app.css
+
+
 # Logs
 logs
 *.log
@@ -133,4 +137,4 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-/pnpm-lock.yaml
+
