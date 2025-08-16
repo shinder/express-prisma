@@ -18,6 +18,15 @@
   "homepage": "https://github.com/shinder/express-mvc-prisma#readme",
   "description": "",
   "dependencies": {
-
+    "dotenv": "^17.2.1",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.3.0",
+    "nodemon": "^3.1.10",
+    "tsx": "^4.20.4",
+    "typescript": "^5.9.2"
   }
 }
