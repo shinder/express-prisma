@@ -58,3 +58,42 @@ model Profile {
   user    User @relation(fields: [user_id], references: [id])
   user_id Int  @unique
 }
+
+model Member {
+  member_id     Int               @id @default(autoincrement())
+  email         String            @unique(map: "email") @db.VarChar(100)
+  password_hash String            @db.VarChar(100)
+  mobile        String?           @db.VarChar(30)
+  nickname      String            @db.VarChar(30)
+  create_at     DateTime          @db.DateTime(0)
+  favorites     ContactFavorite[]
+
+  @@map("members")
+}
+
+model Contact {
+  ab_id      Int               @id @default(autoincrement())
+  name       String            @db.VarChar(255)
+  email      String            @db.VarChar(255)
+  mobile     String            @db.VarChar(255)
+  birthday   DateTime?         @db.Date
+  address    String            @db.VarChar(255)
+  created_at DateTime          @default(now()) @db.DateTime(0)
+  favorites  ContactFavorite[]
+
+  @@map("address_book")
+}
+
+model ContactFavorite {
+  like_id    Int      @id @default(autoincrement())
+  member_id  Int
+  ab_id      Int
+  created_at DateTime @default(now()) @db.DateTime(0)
+  member     Member   @relation(fields: [member_id], references: [member_id], onDelete: Cascade, map: "ab_likes_ibfk_1")
+  contact    Contact  @relation(fields: [ab_id], references: [ab_id], onDelete: Cascade, map: "ab_likes_ibfk_2")
+
+  @@unique([member_id, ab_id], map: "member_id_2")
+  @@index([ab_id], map: "ab_id")
+  @@index([member_id], map: "member_id")
+  @@map("ab_likes")
+}
