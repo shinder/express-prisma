@@ -30,8 +30,8 @@ model User {
   profile    Profile?
 
   // 明確註釋為什麼要忽略
-  password      String @ignore // 安全考量：防止意外暴露
-  internalNotes String @ignore // 僅供管理員後台使用
+  password      String @default("") @ignore // 安全考量：防止意外暴露
+  internalNotes String @default("") @ignore // 僅供管理員後台使用
 
   // 對應的資料表為 users
   @@map("users")

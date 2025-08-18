@@ -4,6 +4,10 @@ import express from "express";
 import type { Request, Response, NextFunction } from "express";
 // 截入環境變數設定檔
 import "dotenv/config";
+
+import usersRouter from "./routes/users";
+
+
 // 建立伺服器主物件
 const app = express();
 // 設定靜態內容資料夾
@@ -16,6 +20,9 @@ app.use(express.urlencoded({ extended: true }));
 app.get("/", (req: Request, res: Response) => {
   res.send("歡迎來到 Express + TS !");
 });
+
+app.use("/users", usersRouter);
+
 const port = +(process.env.PORT || "3002");
 app.listen(port, () => {
   console.log(`Express + TS 啟動 http://localhost:${port}`);
