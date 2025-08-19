@@ -6,6 +6,7 @@ import type { Request, Response, NextFunction } from "express";
 import "dotenv/config";
 
 import usersRouter from "./routes/users";
+import tryABRouter from "./routes/try_ab";
 
 
 // 建立伺服器主物件
@@ -22,6 +23,7 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/users", usersRouter);
+app.use("/try-ab", tryABRouter);
 
 const port = +(process.env.PORT || "3002");
 app.listen(port, () => {

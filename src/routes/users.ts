@@ -1,15 +1,8 @@
 import express from "express";
 import type { NextFunction, Request, Response } from "express";
-// import bcrypt from "bcryptjs";
-// import upload from "./../utils/upload-media";
 import { prisma } from "../utils/prisma-only";
-// import getClientIp from "../utils/get-client-ip";
 
 const router = express.Router();
-
-router.use((req: Request, res: Response, next: NextFunction) => {
-  next();
-});
 
 router.get("/create", async (req: Request, res: Response) => {
   try {
@@ -41,7 +34,6 @@ router.get("/update/:user_id?", async (req: Request, res: Response) => {
       where: { id: user_id },
       data: { lastName: "Doe" },
     });
-
     res.status(200).json(user);
   } catch (e) {
     res.status(400).json({ error: e });
