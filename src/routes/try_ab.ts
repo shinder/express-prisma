@@ -53,19 +53,48 @@ router.get("/where-4", async (req: Request, res: Response) => {
 });
 
 router.get("/where-5", async (req: Request, res: Response) => {
-  const beginBirth = new Date("1995-01-01 00:00:00");
+  const contacts = await prisma.contact.findMany({
+    where: {
+      birthday: { equals: null },
+    },
+  });
+  res.status(200).json(contacts);
+});
+
+router.get("/where-6", async (req: Request, res: Response) => {
   const members = await prisma.member.findMany({
     where: {
-      favorites: { notEquals: null  },
+      favorites: { some:{} },
     },
   });
   res.status(200).json(members);
 });
 
-router.get("/where-n", async (req: Request, res: Response) => {
-  const beginBirth = new Date("1995-01-01 00:00:00");
+router.get("/where-7", async (req: Request, res: Response) => {
   const members = await prisma.member.findMany({
-
+    where: {
+      favorites: { none:{} },
+    },
+  });
+  res.status(200).json(members);
+});
+router.get("/where-8", async (req: Request, res: Response) => {
+  const members = await prisma.member.findMany({
+    where: {
+      favorites: { some: {} },
+    },
+    include: {
+      favorites: {
+        include: {
+          contact: true,
+        },
+      },
+    },
+  });
+  res.status(200).json(members);
+});
+router.get("/where-n", async (req: Request, res: Response) => {
+  const members = await prisma.member.findMany({
     where: {
       favorites: { none:{} },
     },
