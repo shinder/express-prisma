@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： localhost
--- 產生時間： 2025 年 08 月 17 日 22:35
+-- 產生時間： 2025 年 08 月 19 日 19:33
 -- 伺服器版本： 10.6.22-MariaDB-0ubuntu0.22.04.1
 -- PHP 版本： 5.6.40-81+ubuntu22.04.1+deb.sury.org+1
 
@@ -19,8 +19,16 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- 資料庫： `shin01`
+-- 資料庫： `shin02`
 --
+
+--
+-- 傾印資料表的資料 `ab_likes`
+--
+
+INSERT INTO `ab_likes` (`like_id`, `member_id`, `ab_id`, `created_at`) VALUES
+(4, 7, 994, '2025-05-22 14:23:20'),
+(5, 7, 857, '2025-05-22 14:23:26');
 
 --
 -- 傾印資料表的資料 `address_book`
@@ -2009,17 +2017,17 @@ INSERT INTO `address_book` (`ab_id`, `name`, `email`, `mobile`, `birthday`, `add
 (1977, '曾宗翰', 'shanon27@gmail.com', '0928912743', '1974-10-10', '雲林縣', '2025-08-15 16:13:52'),
 (1978, '王家瑋', 'wanda_mosciski@gmail.com', '0953761967', '1996-03-23', '連江縣', '2025-08-15 16:13:52'),
 (1979, '王冠霖', 'bernice.wehner77@gmail.com', '0916669703', '2002-03-04', '新北市', '2025-08-15 16:13:52'),
-(1980, '彭柏翰', 'alek97@hotmail.com', '0970735867', '1980-11-15', '臺北市', '2025-08-15 16:13:52'),
+(1980, '彭柏翰', 'alek97@hotmail.com', '0970735867', NULL, '臺北市', '2025-08-15 16:13:52'),
 (1981, '曹彥廷', 'isaias_quitzon26@yahoo.com', '0932240532', '2003-06-25', '新北市', '2025-08-15 16:13:52'),
 (1982, '呂家豪', 'norma51@gmail.com', '0905320963', '1950-07-30', '臺北市', '2025-08-15 16:13:52'),
 (1983, '吳詩涵', 'april_hahn@gmail.com', '0912117491', '1991-04-27', '屏東縣', '2025-08-15 16:13:52'),
 (1984, '吳柏翰', 'lesley55@gmail.com', '0995889834', '1951-03-16', '彰化縣', '2025-08-15 16:13:52'),
-(1985, '羅家瑋', 'daniela.goyette@gmail.com', '0967870992', '2006-05-28', '臺中市', '2025-08-15 16:13:52'),
-(1986, '高宜庭', 'antonia_lockman@hotmail.com', '0900453085', '1997-05-20', '高雄市', '2025-08-15 16:13:52'),
+(1985, '羅家瑋', 'daniela.goyette@gmail.com', '0967870992', NULL, '臺中市', '2025-08-15 16:13:52'),
+(1986, '高宜庭', 'antonia_lockman@hotmail.com', '0900453085', NULL, '高雄市', '2025-08-15 16:13:52'),
 (1987, '馮柏翰', 'jose_yost@hotmail.com', '0935676510', '1954-09-07', '高雄市', '2025-08-15 16:13:52'),
 (1988, '呂冠宇', 'jessie.kessler87@hotmail.com', '0978164321', '2007-06-14', '臺北市', '2025-08-15 16:13:52'),
 (1989, '吳冠宇', 'eleanore96@hotmail.com', '0960291152', '1963-02-07', '雲林縣', '2025-08-15 16:13:52'),
-(1990, '程承翰', 'laron.hauck@hotmail.com', '0934729413', '1961-07-15', '雲林縣', '2025-08-15 16:13:52'),
+(1990, '程承翰', 'laron.hauck@hotmail.com', '0934729413', NULL, '雲林縣', '2025-08-15 16:13:52'),
 (1991, '於宇軒', 'donavon74@hotmail.com', '0965802401', '1984-04-27', '雲林縣', '2025-08-15 16:13:52'),
 (1992, '孫彥廷', 'leonardo.mueller61@gmail.com', '0969894331', '1965-09-12', '臺南市', '2025-08-15 16:13:52'),
 (1993, '許郁婷', 'laron.cremin32@yahoo.com', '0926712117', '2004-10-14', '新北市', '2025-08-15 16:13:52'),
@@ -2039,14 +2047,6 @@ INSERT INTO `members` (`member_id`, `email`, `password_hash`, `mobile`, `nicknam
 (3, 'ming@test.com', '$2b$12$oKaX5/UXXNQv5oEFWGWr2.ER.jL2DBs7w.ErhuglqmUH4.YMBeZie', '0918222333', '大明', '2019-01-07 10:39:38'),
 (7, 'shin@test.com', '$2b$12$oKaX5/UXXNQv5oEFWGWr2.ER.jL2DBs7w.ErhuglqmUH4.YMBeZie', '0918222555', '小新', '2020-09-17 10:30:38'),
 (8, 'mary@test.com', '$2b$12$oKaX5/UXXNQv5oEFWGWr2.ER.jL2DBs7w.ErhuglqmUH4.YMBeZie', '0918222555', '瑪麗亞', '2020-09-17 10:30:38');
-
---
--- 傾印資料表的資料 `ab_likes`
---
-
-INSERT INTO `ab_likes` (`like_id`, `member_id`, `ab_id`, `created_at`) VALUES
-(4, 7, 994, '2025-05-22 14:23:20'),
-(5, 7, 857, '2025-05-22 14:23:26');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
