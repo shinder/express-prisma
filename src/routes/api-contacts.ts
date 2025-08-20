@@ -1,8 +1,29 @@
 import express from "express";
 import type { NextFunction, Request, Response } from "express";
 import { prisma } from "../utils/prisma-pagination";
+import { z } from "zod";
+import moment from "moment";
 
 const router = express.Router();
+
+const createContactSchema = z.object({
+  name: z.string().min(2, "姓名至少需要兩個字"),
+  email: z.string().email({ message: "請輸入有效的電子郵件格式" }),
+  mobile: z.string().optional(),
+  address: z.string().optional(),
+  birthday: z
+    .string()
+    .optional()
+    .refine((val) => {
+      if (!val || val.trim() === "") return true;
+      return moment(val, "YYYY-MM-DD", true).isValid();
+    }, "無效的日期格式，請使用 YYYY-MM-DD 格式")
+    .transform((val) => {
+      if (!val || val.trim() === "") return null;
+      const momentDate = moment(val, "YYYY-MM-DD", true);
+      return momentDate.isValid() ? momentDate.toDate() : null;
+    })
+});
 
 // TODO: RESTFul API
 router.get("/", async (req: Request, res: Response) => {
@@ -76,7 +97,42 @@ router.get("/:ab_id", async (req: Request, res: Response) => {
 });
 
 router.post("/", async (req: Request, res: Response) => {
-  // TODO: 針對 prisma 模型 Contact 做新增資料
+  try {
+    const validatedData = createContactSchema.parse(req.body);
+    
+    const newContact = await prisma.contact.create({
+      data: {
+        name: validatedData.name,
+        email: validatedData.email,
+        mobile: validatedData.mobile || "",
+        address: validatedData.address || "",
+        birthday: validatedData.birthday
+      }
+    });
+
+    res.status(201).json({
+      success: true,
+      data: newContact,
+      message: "聯絡人新增成功"
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        success: false,
+        error: "資料驗證失敗",
+        details: error.issues.map(err => ({
+          field: err.path.join('.'),
+          message: err.message
+        }))
+      });
+    }
+
+    console.error('新增聯絡人失敗:', error);
+    res.status(500).json({
+      success: false,
+      error: "新增聯絡人失敗"
+    });
+  }
 });
 
 router.put("/:ab_id", async (req: Request, res: Response) => {
