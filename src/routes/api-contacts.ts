@@ -6,6 +6,60 @@ import moment from "moment";
 
 const router = express.Router();
 
+// 型別定義
+interface Contact {
+  ab_id: number;
+  name: string;
+  email: string;
+  mobile: string;
+  birthday: Date | null;
+  address: string;
+  created_at: Date;
+}
+
+interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  message?: string;
+  error?: string;
+}
+
+interface ApiErrorResponse extends ApiResponse {
+  success: false;
+  error: string;
+  details?: Array<{
+    field: string;
+    message: string;
+  }>;
+}
+
+interface PaginationMeta {
+  isFirstPage: boolean;
+  isLastPage: boolean;
+  currentPage: number;
+  previousPage: number | null;
+  nextPage: number | null;
+  pageCount: number;
+  totalCount: number;
+  totalPages: number;
+  limit: number;
+}
+
+interface PaginatedResponse<T> extends ApiResponse<T[]> {
+  success: true;
+  data: T[];
+  meta: PaginationMeta;
+}
+
+interface DeleteResponse {
+  success: true;
+  message: string;
+  data: {
+    ab_id: number;
+    name: string;
+  };
+}
+
 const createContactSchema = z.object({
   name: z.string().min(2, "姓名至少需要兩個字"),
   email: z.string().email({ message: "請輸入有效的電子郵件格式" }),
@@ -25,7 +79,7 @@ const createContactSchema = z.object({
     })
 });
 
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response<PaginatedResponse<Contact> | ApiErrorResponse>) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 20;
@@ -40,9 +94,9 @@ router.get("/", async (req: Request, res: Response) => {
         includePageCount: true
       });
 
-    res.json({
+    const response: PaginatedResponse<Contact> = {
       success: true,
-      data: contacts,
+      data: contacts as Contact[],
       meta: {
         ...meta,
         totalCount: meta.totalCount || 0,
@@ -50,25 +104,29 @@ router.get("/", async (req: Request, res: Response) => {
         currentPage: page,
         limit: limit
       }
-    });
+    };
+    
+    res.json(response);
   } catch (error) {
     console.error('獲取聯絡人列表失敗:', error);
-    res.status(500).json({
+    const errorResponse: ApiErrorResponse = {
       success: false,
       error: '獲取聯絡人列表失敗'
-    });
+    };
+    res.status(500).json(errorResponse);
   }
 });
 
-router.get("/:ab_id", async (req: Request, res: Response) => {
+router.get("/:ab_id", async (req: Request, res: Response<ApiResponse<Contact> | ApiErrorResponse>) => {
   try {
     const ab_id = parseInt(req.params.ab_id);
     
     if (isNaN(ab_id)) {
-      return res.status(400).json({
+      const errorResponse: ApiErrorResponse = {
         success: false,
         error: '無效的聯絡人編號'
-      });
+      };
+      return res.status(400).json(errorResponse);
     }
 
     const contact = await prisma.contact.findUnique({
@@ -76,26 +134,29 @@ router.get("/:ab_id", async (req: Request, res: Response) => {
     });
 
     if (!contact) {
-      return res.status(404).json({
+      const errorResponse: ApiErrorResponse = {
         success: false,
         error: '找不到該聯絡人'
-      });
+      };
+      return res.status(404).json(errorResponse);
     }
 
-    res.json({
+    const response: ApiResponse<Contact> = {
       success: true,
-      data: contact
-    });
+      data: contact as Contact
+    };
+    res.json(response);
   } catch (error) {
     console.error('獲取聯絡人失敗:', error);
-    res.status(500).json({
+    const errorResponse: ApiErrorResponse = {
       success: false,
       error: '獲取聯絡人失敗'
-    });
+    };
+    res.status(500).json(errorResponse);
   }
 });
 
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", async (req: Request, res: Response<ApiResponse<Contact> | ApiErrorResponse>) => {
   try {
     const validatedData = createContactSchema.parse(req.body);
     
@@ -109,40 +170,44 @@ router.post("/", async (req: Request, res: Response) => {
       }
     });
 
-    res.status(201).json({
+    const response: ApiResponse<Contact> = {
       success: true,
-      data: newContact,
+      data: newContact as Contact,
       message: "聯絡人新增成功"
-    });
+    };
+    res.status(201).json(response);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({
+      const errorResponse: ApiErrorResponse = {
         success: false,
         error: "資料驗證失敗",
         details: error.issues.map(err => ({
           field: err.path.join('.'),
           message: err.message
         }))
-      });
+      };
+      return res.status(400).json(errorResponse);
     }
 
     console.error('新增聯絡人失敗:', error);
-    res.status(500).json({
+    const errorResponse: ApiErrorResponse = {
       success: false,
       error: "新增聯絡人失敗"
-    });
+    };
+    res.status(500).json(errorResponse);
   }
 });
 
-router.put("/:ab_id", async (req: Request, res: Response) => {
+router.put("/:ab_id", async (req: Request, res: Response<ApiResponse<Contact> | ApiErrorResponse>) => {
   try {
     const ab_id = parseInt(req.params.ab_id);
     
     if (isNaN(ab_id)) {
-      return res.status(400).json({
+      const errorResponse: ApiErrorResponse = {
         success: false,
         error: '無效的聯絡人 ID'
-      });
+      };
+      return res.status(400).json(errorResponse);
     }
 
     // 檢查聯絡人是否存在
@@ -151,10 +216,11 @@ router.put("/:ab_id", async (req: Request, res: Response) => {
     });
 
     if (!existingContact) {
-      return res.status(404).json({
+      const errorResponse: ApiErrorResponse = {
         success: false,
         error: '找不到該聯絡人'
-      });
+      };
+      return res.status(404).json(errorResponse);
     }
 
     // 驗證資料
@@ -172,40 +238,44 @@ router.put("/:ab_id", async (req: Request, res: Response) => {
       }
     });
 
-    res.json({
+    const response: ApiResponse<Contact> = {
       success: true,
-      data: updatedContact,
+      data: updatedContact as Contact,
       message: "聯絡人更新成功"
-    });
+    };
+    res.json(response);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({
+      const errorResponse: ApiErrorResponse = {
         success: false,
         error: "資料驗證失敗",
         details: error.issues.map(err => ({
           field: err.path.join('.'),
           message: err.message
         }))
-      });
+      };
+      return res.status(400).json(errorResponse);
     }
 
     console.error('更新聯絡人失敗:', error);
-    res.status(500).json({
+    const errorResponse: ApiErrorResponse = {
       success: false,
       error: "更新聯絡人失敗"
-    });
+    };
+    res.status(500).json(errorResponse);
   }
 });
 
-router.delete("/:ab_id", async (req: Request, res: Response) => {
+router.delete("/:ab_id", async (req: Request, res: Response<DeleteResponse | ApiErrorResponse>) => {
   try {
     const ab_id = parseInt(req.params.ab_id);
     
     if (isNaN(ab_id)) {
-      return res.status(400).json({
+      const errorResponse: ApiErrorResponse = {
         success: false,
         error: '無效的聯絡人 ID'
-      });
+      };
+      return res.status(400).json(errorResponse);
     }
 
     // 檢查聯絡人是否存在
@@ -214,10 +284,11 @@ router.delete("/:ab_id", async (req: Request, res: Response) => {
     });
 
     if (!existingContact) {
-      return res.status(404).json({
+      const errorResponse: ApiErrorResponse = {
         success: false,
         error: '找不到該聯絡人'
-      });
+      };
+      return res.status(404).json(errorResponse);
     }
 
     // 刪除聯絡人
@@ -225,20 +296,22 @@ router.delete("/:ab_id", async (req: Request, res: Response) => {
       where: { ab_id: ab_id }
     });
 
-    res.json({
+    const response: DeleteResponse = {
       success: true,
       message: "聯絡人刪除成功",
       data: {
         ab_id: ab_id,
         name: existingContact.name
       }
-    });
+    };
+    res.json(response);
   } catch (error) {
     console.error('刪除聯絡人失敗:', error);
-    res.status(500).json({
+    const errorResponse: ApiErrorResponse = {
       success: false,
       error: "刪除聯絡人失敗"
-    });
+    };
+    res.status(500).json(errorResponse);
   }
 });
 export default router;
