@@ -22,13 +22,6 @@ SET time_zone = "+00:00";
 -- 資料庫： `shin02`
 --
 
---
--- 傾印資料表的資料 `ab_likes`
---
-
-INSERT INTO `ab_likes` (`like_id`, `member_id`, `ab_id`, `created_at`) VALUES
-(4, 7, 994, '2025-05-22 14:23:20'),
-(5, 7, 857, '2025-05-22 14:23:26');
 
 --
 -- 傾印資料表的資料 `address_book`
@@ -2046,7 +2039,15 @@ INSERT INTO `address_book` (`ab_id`, `name`, `email`, `mobile`, `birthday`, `add
 INSERT INTO `members` (`member_id`, `email`, `password_hash`, `mobile`, `nickname`, `create_at`) VALUES
 (3, 'ming@test.com', '$2b$12$oKaX5/UXXNQv5oEFWGWr2.ER.jL2DBs7w.ErhuglqmUH4.YMBeZie', '0918222333', '大明', '2019-01-07 10:39:38'),
 (7, 'shin@test.com', '$2b$12$oKaX5/UXXNQv5oEFWGWr2.ER.jL2DBs7w.ErhuglqmUH4.YMBeZie', '0918222555', '小新', '2020-09-17 10:30:38'),
-(8, 'mary@test.com', '$2b$12$oKaX5/UXXNQv5oEFWGWr2.ER.jL2DBs7w.ErhuglqmUH4.YMBeZie', '0918222555', '瑪麗亞', '2020-09-17 10:30:38');
+(8, 'mary@test.com', '$2b$12$oKaX5/UXXNQv5oEFWGWr2.ER.jL2DBs7w.ErhuglqmUH4.YMBeZie', '0918222555', '瑪麗', '2020-09-17 10:30:38');
+
+--
+-- 傾印資料表的資料 `ab_likes`
+--
+
+INSERT INTO `ab_likes` (`like_id`, `member_id`, `ab_id`, `created_at`) VALUES
+(4, 7, 994, '2025-05-22 14:23:20'),
+(5, 7, 857, '2025-05-22 14:23:26');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
