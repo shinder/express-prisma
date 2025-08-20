@@ -136,7 +136,66 @@ router.post("/", async (req: Request, res: Response) => {
 });
 
 router.put("/:ab_id", async (req: Request, res: Response) => {
-  // TODO: 針對 prisma 模型 Contact 做更新資料
+  try {
+    const ab_id = parseInt(req.params.ab_id);
+    
+    if (isNaN(ab_id)) {
+      return res.status(400).json({
+        success: false,
+        error: '無效的聯絡人 ID'
+      });
+    }
+
+    // 檢查聯絡人是否存在
+    const existingContact = await prisma.contact.findUnique({
+      where: { ab_id: ab_id }
+    });
+
+    if (!existingContact) {
+      return res.status(404).json({
+        success: false,
+        error: '找不到該聯絡人'
+      });
+    }
+
+    // 驗證資料
+    const validatedData = createContactSchema.parse(req.body);
+    
+    // 更新聯絡人資料
+    const updatedContact = await prisma.contact.update({
+      where: { ab_id: ab_id },
+      data: {
+        name: validatedData.name,
+        email: validatedData.email,
+        mobile: validatedData.mobile || "",
+        address: validatedData.address || "",
+        birthday: validatedData.birthday
+      }
+    });
+
+    res.json({
+      success: true,
+      data: updatedContact,
+      message: "聯絡人更新成功"
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        success: false,
+        error: "資料驗證失敗",
+        details: error.issues.map(err => ({
+          field: err.path.join('.'),
+          message: err.message
+        }))
+      });
+    }
+
+    console.error('更新聯絡人失敗:', error);
+    res.status(500).json({
+      success: false,
+      error: "更新聯絡人失敗"
+    });
+  }
 });
 
 router.delete("/:ab_id", async (req: Request, res: Response) => {
