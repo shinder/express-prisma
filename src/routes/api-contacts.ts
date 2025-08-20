@@ -25,7 +25,6 @@ const createContactSchema = z.object({
     })
 });
 
-// TODO: RESTFul API
 router.get("/", async (req: Request, res: Response) => {
   try {
     const page = parseInt(req.query.page as string) || 1;
@@ -199,6 +198,47 @@ router.put("/:ab_id", async (req: Request, res: Response) => {
 });
 
 router.delete("/:ab_id", async (req: Request, res: Response) => {
-  // TODO: 針對 prisma 模型 Contact 做刪除資料
+  try {
+    const ab_id = parseInt(req.params.ab_id);
+    
+    if (isNaN(ab_id)) {
+      return res.status(400).json({
+        success: false,
+        error: '無效的聯絡人 ID'
+      });
+    }
+
+    // 檢查聯絡人是否存在
+    const existingContact = await prisma.contact.findUnique({
+      where: { ab_id: ab_id }
+    });
+
+    if (!existingContact) {
+      return res.status(404).json({
+        success: false,
+        error: '找不到該聯絡人'
+      });
+    }
+
+    // 刪除聯絡人
+    await prisma.contact.delete({
+      where: { ab_id: ab_id }
+    });
+
+    res.json({
+      success: true,
+      message: "聯絡人刪除成功",
+      data: {
+        ab_id: ab_id,
+        name: existingContact.name
+      }
+    });
+  } catch (error) {
+    console.error('刪除聯絡人失敗:', error);
+    res.status(500).json({
+      success: false,
+      error: "刪除聯絡人失敗"
+    });
+  }
 });
 export default router;
