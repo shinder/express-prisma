@@ -113,11 +113,64 @@ router.post("/login", async (req: Request, res: Response) => {
 });
 
 router.get("/logged-in", async (req: Request, res: Response) => {
-  // TODO：若有登入，回傳 req.session.member 資料，若無回傳 null
+  try {
+    const sessionMember = (req.session as any).member;
+    
+    if (sessionMember) {
+      const response: ApiResponse = {
+        success: true,
+        data: sessionMember,
+        message: "已登入"
+      };
+      res.status(200).json(response);
+    } else {
+      const response: ApiResponse = {
+        success: false,
+        data: null,
+        message: "未登入"
+      };
+      res.status(200).json(response);
+    }
+  } catch (error) {
+    console.error('檢查登入狀態失敗:', error);
+    const errorResponse: ApiErrorResponse = {
+      success: false,
+      error: "伺服器內部錯誤，請稍後再試"
+    };
+    res.status(500).json(errorResponse);
+  }
 });
 
 router.get("/logout", async (req: Request, res: Response) => {
-  // TODO：登出移除 req.session.member
+  try {
+    const sessionMember = (req.session as any).member;
+    
+    if (sessionMember) {
+      // 移除 session 中的 member 資料
+      delete (req.session as any).member;
+      
+      const response: ApiResponse = {
+        success: true,
+        data: null,
+        message: "登出成功"
+      };
+      res.status(200).json(response);
+    } else {
+      const response: ApiResponse = {
+        success: false,
+        data: null,
+        message: "您尚未登入"
+      };
+      res.status(200).json(response);
+    }
+  } catch (error) {
+    console.error('登出失敗:', error);
+    const errorResponse: ApiErrorResponse = {
+      success: false,
+      error: "伺服器內部錯誤，請稍後再試"
+    };
+    res.status(500).json(errorResponse);
+  }
 });
 
 export default router;
