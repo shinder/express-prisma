@@ -4,34 +4,11 @@ import { prisma } from "../utils/prisma-pagination";
 import { z } from "zod";
 import moment from "moment";
 import bcrypt from "bcrypt";
+import type { Member, ApiResponse, ApiErrorResponse } from "../interfaces";
 
 const router = express.Router();
 
-// 型別定義
-interface Member {
-  member_id: number;
-  email: string;
-  password_hash: string;
-  mobile: string | null;
-  nickname: string;
-  create_at: Date;
-}
-
-interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
-}
-
-interface ApiErrorResponse extends ApiResponse {
-  success: false;
-  error: string;
-  details?: Array<{
-    field: string;
-    message: string;
-  }>;
-}
+// Zod 驗證 schemas
 
 // Zod 驗證 schema
 const loginSchema = z.object({

@@ -3,62 +3,11 @@ import type { NextFunction, Request, Response } from "express";
 import { prisma } from "../utils/prisma-pagination";
 import { z } from "zod";
 import moment from "moment";
+import type { Contact, ApiResponse, ApiErrorResponse, PaginatedResponse, DeleteResponse } from "../interfaces";
 
 const router = express.Router();
 
-// 型別定義
-interface Contact {
-  ab_id: number;
-  name: string;
-  email: string;
-  mobile: string;
-  birthday: Date | null;
-  address: string;
-  created_at: Date;
-}
-
-interface ApiResponse<T = any> {
-  success: boolean;
-  data?: T;
-  message?: string;
-  error?: string;
-}
-
-interface ApiErrorResponse extends ApiResponse {
-  success: false;
-  error: string;
-  details?: Array<{
-    field: string;
-    message: string;
-  }>;
-}
-
-interface PaginationMeta {
-  isFirstPage: boolean;
-  isLastPage: boolean;
-  currentPage: number;
-  previousPage: number | null;
-  nextPage: number | null;
-  pageCount: number;
-  totalCount: number;
-  totalPages: number;
-  limit: number;
-}
-
-interface PaginatedResponse<T> extends ApiResponse<T[]> {
-  success: true;
-  data: T[];
-  meta: PaginationMeta;
-}
-
-interface DeleteResponse {
-  success: true;
-  message: string;
-  data: {
-    ab_id: number;
-    name: string;
-  };
-}
+// Zod 驗證 schemas
 
 const createContactSchema = z.object({
   name: z.string().min(2, "姓名至少需要兩個字"),
