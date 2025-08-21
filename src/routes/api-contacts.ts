@@ -21,7 +21,6 @@ router.get("/", async (req: Request, res: Response<PaginatedResponse<Contact> | 
       .withPages({
         limit: limit,
         page: page,
-        includePageCount: true
       });
 
     const response: PaginatedResponse<Contact> = {
@@ -29,10 +28,7 @@ router.get("/", async (req: Request, res: Response<PaginatedResponse<Contact> | 
       data: contacts as Contact[],
       meta: {
         ...meta,
-        totalCount: meta.totalCount || 0,
-        totalPages: meta.pageCount || 0,
-        currentPage: page,
-        limit: limit
+        limit,
       }
     };
     
@@ -47,6 +43,29 @@ router.get("/", async (req: Request, res: Response<PaginatedResponse<Contact> | 
   }
 });
 
+// /try-cursor 為測試 cursor 的路由
+router.get("/try-cursor", async (req: Request, res: Response) => {
+  try {
+    const limit = parseInt(req.query.limit as string) || 10;
+    const after = req.query.after as string;
+    const [contacts, meta] = await prisma.contact
+      .paginate({
+        orderBy: { ab_id: 'asc' }
+      })
+      .withCursor({
+        limit,
+        after: after || undefined
+      });
+    res.json({success: true, contacts, meta});
+  } catch (error) {
+    console.error('Cursor pagination 失敗:', error);
+    const errorResponse: ApiErrorResponse = {
+      success: false,
+      error: `Cursor pagination 失敗: ${error instanceof Error ? error.message : 'Unknown error'}`
+    };
+    res.status(500).json(errorResponse);
+  }
+});
 router.get("/:ab_id", async (req: Request, res: Response<ApiResponse<Contact> | ApiErrorResponse>) => {
   try {
     const ab_id = parseInt(req.params.ab_id);

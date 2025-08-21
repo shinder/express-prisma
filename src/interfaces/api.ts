@@ -24,7 +24,6 @@ export interface PaginationMeta {
   nextPage: number | null;
   pageCount: number;
   totalCount: number;
-  totalPages: number;
   limit: number;
 }
 
