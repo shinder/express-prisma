@@ -97,38 +97,24 @@ router.post("/jwt-login", async (req: Request, res: Response) => {
 
 router.get("/jwt-logged-in", async (req: Request, res: Response) => {
   try {
-    const authorization = req.headers.authorization;
-    
-    if (!authorization || !authorization.startsWith('Bearer ')) {
-      const response: ApiResponse = {
-        success: false,
-        data: null,
-        message: "未提供有效的 token"
-      };
-      return res.status(401).json(response);
-    }
-
-    const token = authorization.substring(7); // 移除 "Bearer " 前綴
-    
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
-      
+    // 使用 top-level middleware 解析的用戶資訊
+    if (req.user) {
       const response: ApiResponse = {
         success: true,
         data: {
-          member_id: decoded.member_id,
-          email: decoded.email,
-          nickname: decoded.nickname,
-          mobile: decoded.mobile
+          member_id: req.user.member_id,
+          email: req.user.email,
+          nickname: req.user.nickname,
+          mobile: req.user.mobile
         },
         message: "已登入"
       };
       res.status(200).json(response);
-    } catch (jwtError) {
+    } else {
       const response: ApiResponse = {
         success: false,
         data: null,
-        message: "token 無效或已過期"
+        message: "未登入或 token 無效"
       };
       res.status(401).json(response);
     }

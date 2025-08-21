@@ -14,6 +14,7 @@ import tryABRouter from "./routes/try_ab";
 import apiContactsRouter from "./routes/api-contacts";
 import apiLoginRouter from "./routes/api-login";
 import apiJwtLoginRouter from "./routes/api-jwt-login";
+import { jwtParseMiddleware } from "./middleware";
 
 
 // 建立伺服器主物件
@@ -45,23 +46,15 @@ app.use(
 
 
 // ************* 自訂的頂層 "中間件, 中介軟體" *************
+// JWT 解析 middleware (可選性驗證)
+app.use(jwtParseMiddleware);
+
 app.use((req, res, next) => {
   res.locals.pageName = "";
   res.locals.session = req.session; // 讓所有的 EJS 可以用 session 變數
   res.locals.query = req.query;
   res.locals.cookies = req.cookies;
-
-
-/*
-  const auth = req.get("Authorization");
-  if (auth && auth.indexOf("Bearer ") === 0) {
-    const token = auth.slice(7);
-    try {
-      req.my_jwt = jwt.verify(token, process.env.JWT_SECRET);
-    } catch (ex) {}
-  }
-
- */
+  
   next();
 });
 
