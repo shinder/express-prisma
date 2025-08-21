@@ -7,6 +7,7 @@ import "dotenv/config";
 
 import cookieParser from "cookie-parser";
 import session from "express-session";
+import sessionFileStore from "session-file-store";
 
 import usersRouter from "./routes/users";
 import tryABRouter from "./routes/try_ab";
@@ -26,6 +27,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(cookieParser()); // 全域中介軟體：解析 cookies
+
+const FileStore = sessionFileStore(session);
 app.use(
     session({
       // 新用戶沒有使用到 session 物件時不會建立 session 和發送 cookie
@@ -35,7 +38,7 @@ app.use(
       // cookie: {
       //   maxAge: 1200_000, // 20分鐘，單位毫秒
       // },
-      // store: sessionStore, // 使用 MySQL 作為 session 儲存
+      store: new FileStore({}), // 使用檔案作為 session 儲存媒介
     })
 );
 
@@ -74,5 +77,5 @@ app.use("/api/contacts", apiContactsRouter);
 
 const port = +(process.env.PORT || "3002");
 app.listen(port, () => {
-  console.log(`Express + TS 啟動 http://localhost:${port}`);
+  console.log(`Express + Prisma 啟動 http://localhost:${port}`);
 });

@@ -3,6 +3,7 @@
 .idea/
 .DS_Store
 Thumbs.db
+sessions
 
 /pnpm-lock.yaml
 /public/css/app.css
