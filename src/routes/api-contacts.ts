@@ -2,31 +2,12 @@ import express from "express";
 import type { NextFunction, Request, Response } from "express";
 import { prisma } from "../utils/prisma-pagination";
 import { z } from "zod";
-import moment from "moment";
 import type { Contact, ApiResponse, ApiErrorResponse, PaginatedResponse, DeleteResponse } from "../interfaces";
+import { createContactSchema } from "../schemas";
 
 const router = express.Router();
 
-// Zod 驗證 schemas
-
-const createContactSchema = z.object({
-  name: z.string().min(2, "姓名至少需要兩個字"),
-  email: z.string().email({ message: "請輸入有效的電子郵件格式" }),
-  mobile: z.string().optional(),
-  address: z.string().optional(),
-  birthday: z
-    .string()
-    .optional()
-    .refine((val) => {
-      if (!val || val.trim() === "") return true;
-      return moment(val, "YYYY-MM-DD", true).isValid();
-    }, "無效的日期格式，請使用 YYYY-MM-DD 格式")
-    .transform((val) => {
-      if (!val || val.trim() === "") return null;
-      const momentDate = moment(val, "YYYY-MM-DD", true);
-      return momentDate.isValid() ? momentDate.toDate() : null;
-    })
-});
+// Router 路由定義
 
 router.get("/", async (req: Request, res: Response<PaginatedResponse<Contact> | ApiErrorResponse>) => {
   try {

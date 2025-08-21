@@ -5,16 +5,11 @@ import { z } from "zod";
 import moment from "moment";
 import bcrypt from "bcrypt";
 import type { Member, ApiResponse, ApiErrorResponse } from "../interfaces";
+import { loginSchema } from "../schemas";
 
 const router = express.Router();
 
-// Zod 驗證 schemas
-
-// Zod 驗證 schema
-const loginSchema = z.object({
-  email: z.string().email({ message: "請輸入有效的電子郵件格式" }),
-  password: z.string().min(6, "密碼至少需要 6 個字元")
-});
+// Router 路由定義
 
 router.post("/login", async (req: Request, res: Response) => {
   try {
