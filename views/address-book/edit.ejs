@@ -1,0 +1,235 @@
+<%- include("../partials/html-head") %>
+<%- include("../partials/html-navbar") %>
+<style>
+  .form-control.error {
+    border-color: rgb(248 113 113);
+  }
+
+  .modal-success .alert-success {
+    display: block;
+  }
+
+  .modal-success .alert-warning {
+    display: none;
+  }
+
+  .modal-warning .alert-success {
+    display: none;
+  }
+
+  .modal-warning .alert-warning {
+    display: block;
+  }
+</style>
+<div class="min-h-screen flex items-center justify-center bg-base-200 px-4">
+  <div class="card w-full max-w-lg bg-base-100 shadow-xl">
+    <div class="card-body">
+      <h2 class="card-title text-center text-2xl font-bold mb-6">編輯通訊錄</h2>
+      <form name="form1" onsubmit="sendData(event)" novalidate>
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">編號</span>
+          </label>
+          <input
+            type="text"
+            class="input input-bordered w-full"
+            value="<%= ab_id %>"
+            disabled
+          />
+        </div>
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">姓名</span>
+          </label>
+          <input
+            type="text"
+            class="input input-bordered w-full"
+            id="name"
+            name="name"
+            value="<%= name %>"
+            placeholder="請輸入姓名"
+          />
+          <div class="text-error text-sm"></div>
+        </div>
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">電子郵箱</span>
+          </label>
+          <input
+            type="email"
+            class="input input-bordered w-full"
+            id="email"
+            name="email"
+            value="<%= email %>"
+            placeholder="請輸入電子郵箱"
+          />
+          <div class="text-error text-sm"></div>
+        </div>
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">手機</span>
+          </label>
+          <input
+            type="tel"
+            class="input input-bordered w-full"
+            id="mobile"
+            name="mobile"
+            value="<%= mobile %>"
+            placeholder="請輸入手機號碼"
+          />
+          <div class="text-error text-sm"></div>
+        </div>
+        <div class="form-control mb-4">
+          <label class="label">
+            <span class="label-text">生日</span>
+          </label>
+          <input
+            type="date"
+            class="input input-bordered w-full"
+            id="birthday"
+            name="birthday"
+            value="<%= birthday %>"
+          />
+          <div class="text-error text-sm"></div>
+        </div>
+        <div class="form-control mb-6">
+          <label class="label">
+            <span class="label-text">地址</span>
+          </label>
+          <textarea
+            class="textarea textarea-bordered w-full"
+            id="address"
+            name="address"
+            placeholder="請輸入地址"
+            rows="3"
+          ><%= address %></textarea>
+        </div>
+
+        <div class="form-control">
+          <button type="submit" class="btn btn-primary w-full">修改</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<dialog id="resultModal" class="modal">
+  <div class="modal-box">
+    <h3 class="font-bold text-lg mb-4">編輯結果</h3>
+    <div class="alert alert-success mb-4 modal-success" style="display: none;">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+      <span>資料編輯成功</span>
+    </div>
+    <div class="alert alert-warning mb-4 modal-warning" style="display: none;">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+      </svg>
+      <span>資料沒有修改</span>
+    </div>
+    <div class="modal-action">
+      <form method="dialog">
+        <button class="btn btn-secondary mr-2">繼續編輯</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          onclick="location.href= document.referrer ? document.referrer : '/address-book' "
+        >
+          回列表頁
+        </button>
+      </form>
+    </div>
+  </div>
+</dialog>
+<%- include("../partials/html-scripts") %>
+<script>
+    const ab_id = <%- ab_id %>;
+    const modal = document.getElementById('resultModal');
+    const nameField = document.form1.name;
+    const emailField = document.form1.email;
+
+    function validateEmail(email) {
+      const re =
+        /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      return re.test(email);
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.input, .textarea').forEach(field => {
+        field.classList.remove('error');
+        field.classList.remove('input-error');
+      });
+      document.querySelectorAll('.text-error').forEach(text => {
+        text.innerHTML = '';
+        text.style.display = 'none';
+      });
+    }
+
+    const sendData = async e => {
+      e.preventDefault();
+
+      // 清除之前的錯誤狀態
+      clearErrors();
+
+      // TODO: 表單欄位檢查
+      let isPass = true;
+      /*
+      if (nameField.value.length < 2) {
+        isPass = false;
+        nameField.nextElementSibling.innerHTML = '請填入正確的姓名';
+        nameField.classList.add('input-error');
+        nameField.nextElementSibling.style.display = 'block';
+      }
+      if (!validateEmail(emailField.value)) {
+        isPass = false;
+        emailField.nextElementSibling.innerHTML = '請填入正確的 Email';
+        emailField.classList.add('input-error');
+        emailField.nextElementSibling.style.display = 'block';
+      }
+      */
+
+      if (!isPass) {
+        return;
+      }
+
+      const fd = new FormData(document.form1);
+
+      try {
+        const obj = await apiRequest(`/address-book/api/${ab_id}`, {
+          method: 'PUT',
+          body: fd,
+        }, '編輯聯絡人');
+        
+        const successAlert = modal.querySelector('.alert-success');
+        const warningAlert = modal.querySelector('.alert-warning');
+
+        if (obj.success) {
+          successAlert.style.display = 'flex';
+          warningAlert.style.display = 'none';
+          modal.showModal();
+        } else {
+          if(obj.issues?.length){
+            // 處理驗證錯誤
+            obj.issues?.forEach((issue) => {
+              const name = issue.path[0];
+              const msg = issue.message;
+              const field = document.form1[name];
+              const errorText = field.nextElementSibling;
+              errorText.innerHTML = msg;
+              errorText.style.display = 'block';
+              field.classList.add('input-error');
+            });
+          } else {
+            successAlert.style.display = 'none';
+            warningAlert.style.display = 'flex';
+            modal.showModal();
+          }
+        }
+      } catch (error) {
+        // 錯誤已由 apiRequest 處理
+      }
+    }
+</script>
+<%- include("../partials/html-tail") %>
