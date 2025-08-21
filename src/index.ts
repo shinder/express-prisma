@@ -11,6 +11,7 @@ import session from "express-session";
 import usersRouter from "./routes/users";
 import tryABRouter from "./routes/try_ab";
 import apiContactsRouter from "./routes/api-contacts";
+import apiLoginRouter from "./routes/api-login";
 
 
 // 建立伺服器主物件
@@ -67,6 +68,8 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/users", usersRouter);
 app.use("/try-ab", tryABRouter);
+
+app.use("/api", apiLoginRouter);
 app.use("/api/contacts", apiContactsRouter);
 
 const port = +(process.env.PORT || "3002");
