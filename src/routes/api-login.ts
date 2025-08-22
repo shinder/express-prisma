@@ -5,6 +5,7 @@ import { z } from "zod";
 import bcrypt from "bcrypt";
 import type { Member, ApiResponse, ApiErrorResponse } from "../interfaces";
 import { loginSchema } from "../schemas";
+import { saveSessionAsync, destroySessionAsync, setSessionDataAsync, clearSessionFieldsAsync } from "../utils/session-utils";
 
 const router = express.Router();
 
@@ -40,13 +41,18 @@ router.post("/login", async (req: Request, res: Response) => {
       return res.status(401).json(errorResponse);
     }
 
-    // 成功登入，設定 session
-    (req.session as any).member = {
-      member_id: member.member_id,
-      email: member.email,
-      nickname: member.nickname,
-      mobile: member.mobile
+    // 成功登入，設定 session 並確保儲存完成
+    const sessionData = {
+      member: {
+        member_id: member.member_id,
+        email: member.email,
+        nickname: member.nickname,
+        mobile: member.mobile
+      }
     };
+
+    // 使用工具函數安全地設定並儲存 session
+    await setSessionDataAsync(req, sessionData);
 
     const response: ApiResponse<Omit<Member, 'password_hash'>> = {
       success: true,
@@ -117,8 +123,8 @@ router.get("/logout", async (req: Request, res: Response) => {
     const sessionMember = (req.session as any).member;
     
     if (sessionMember) {
-      // 移除 session 中的 member 資料
-      delete (req.session as any).member;
+      // 安全地清除 session 中的 member 資料並確保儲存
+      await clearSessionFieldsAsync(req, ['member']);
       
       const response: ApiResponse = {
         success: true,
@@ -138,7 +144,7 @@ router.get("/logout", async (req: Request, res: Response) => {
     console.error('登出失敗:', error);
     const errorResponse: ApiErrorResponse = {
       success: false,
-      error: "伺服器內部錯誤，請稍後再試"
+      error: "登出過程中發生錯誤，請稍後再試"
     };
     res.status(500).json(errorResponse);
   }
