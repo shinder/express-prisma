@@ -8,6 +8,7 @@ sessions
 /pnpm-lock.yaml
 /public/css/app.css
 
+prisma/migrations
 
 # Logs
 logs
