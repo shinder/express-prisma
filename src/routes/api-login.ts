@@ -5,13 +5,13 @@ import { z } from "zod";
 import bcrypt from "bcrypt";
 import type { Member, ApiResponse, ApiErrorResponse } from "../interfaces";
 import { loginSchema } from "../schemas";
-import { saveSessionAsync, destroySessionAsync, setSessionDataAsync, clearSessionFieldsAsync } from "../utils/session-utils";
+import { setSessionDataAsync, clearSessionFieldsAsync } from "../utils/session-utils";
+import upload from "../utils/upload-images"
 
 const router = express.Router();
-
 // Router 路由定義
 
-router.post("/login", async (req: Request, res: Response) => {
+router.post("/login", upload.none(), async (req: Request, res: Response) => {
   try {
     // 驗證輸入資料
     const validatedData = loginSchema.parse(req.body);

@@ -82,16 +82,7 @@
   <div class="flex-none">
     <ul class="menu menu-horizontal px-1">
       <!-- 功能區塊 -->
-      <li>
-        <a href="/sales-array" class="<%= pageName==='sales-array' ? 'border pointer-events-none' : '' %>">
-          sales-array
-        </a>
-      </li>
-      <li>
-        <a href="/try-post-form" class="<%= pageName==='try-post-form' ? 'border pointer-events-none' : '' %>">
-          try-post-form
-        </a>
-      </li>
+
       <li>
         <a href="/address-book" class="<%= pageName==='ab-list' ? 'border pointer-events-none' : '' %>">
           <i class="fa-solid fa-address-book mr-1"></i>通訊錄列表
@@ -111,14 +102,14 @@
       <% } %>
       
       <!-- 用戶區塊 -->
-      <% if(session.admin){ %>
+      <% if(session.member){ %>
       <li>
         <a class="cursor-default pointer-events-none">
-          <i class="fa-solid fa-user mr-1"></i><%= session.admin.nickname %>
+          <i class="fa-solid fa-user mr-1"></i><%= session.member.nickname %>
         </a>
       </li>
       <li>
-        <a href="/logout" class="text-warning">
+        <a href="javascript: logout()" class="text-warning">
           <i class="fa-solid fa-right-from-bracket mr-1"></i>登出
         </a>
       </li>
@@ -129,32 +120,21 @@
         </a>
       </li>
       <% } %>
-      
-      <!-- 設定區塊 -->
-      <li>
-        <details class="my-theme-selector">
-          <summary>
-            <i class="fa-solid fa-palette mr-1"></i>場景配色
-            <span id="currentTheme" class="badge badge-sm ml-1">
-              <%= cookies.preferredTheme ? cookies.preferredTheme : 'retro' %>
-            </span>
-          </summary>
-          <ul class="bg-base-100 rounded-t-none p-2 w-32">
-            <li><a href="#" onclick="changeTheme('retro')" data-theme="retro">
-              <span class="theme-indicator retro"></span>retro
-            </a></li>
-            <li><a href="#" onclick="changeTheme('cupcake')" data-theme="cupcake">
-              <span class="theme-indicator cupcake"></span>cupcake
-            </a></li>
-            <li><a href="#" onclick="changeTheme('dark')" data-theme="dark">
-              <span class="theme-indicator dark"></span>dark
-            </a></li>
-            <li><a href="#" onclick="changeTheme('light')" data-theme="light">
-              <span class="theme-indicator light"></span>light
-            </a></li>
-          </ul>
-        </details>
-      </li>
+
     </ul>
   </div>
 </div>
+<script>
+  const logout = async () => {
+    try {
+      const r = await fetch('/api/logout');
+      const result = await r.json();
+      console.log(JSON.stringify(result, null, 2));
+      if(result.success) {
+        location.reload();
+      }
+    } catch(ex) {
+      console.log('登出發生錯誤', ex)
+    }
+  }
+</script>

@@ -10,6 +10,7 @@ import session from "express-session";
 import sessionFileStore from "session-file-store";
 import cors from "cors";
 
+import mainRouter from "./routes/main";
 import usersRouter from "./routes/users";
 import tryABRouter from "./routes/try_ab";
 import apiContactsRouter from "./routes/api-contacts";
@@ -97,6 +98,7 @@ app.get("/", (req: Request, res: Response) => {
 
 app.use("/users", usersRouter);
 app.use("/try-ab", tryABRouter);
+app.use("/", mainRouter);
 
 app.use("/api", apiLoginRouter);
 app.use("/api", apiJwtLoginRouter);
