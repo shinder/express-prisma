@@ -82,7 +82,7 @@ app.use(
 // JWT 解析 middleware (可選性驗證)
 app.use(jwtParseMiddleware);
 
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   res.locals.pageName = "";
   res.locals.session = req.session; // 讓所有的 EJS 可以用 session 變數
   res.locals.query = req.query;
